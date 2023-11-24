@@ -74,7 +74,6 @@ const AlgoliaSearch: React.FC = () => {
     >
       <SearchBox
         onSubmit={(event) => {
-          // Handle the search submit logic here
           const query = event.currentTarget.value;
           const results = contentfulData.filter((post) =>
             post.title.toLowerCase().includes(query.toLowerCase())
@@ -82,7 +81,7 @@ const AlgoliaSearch: React.FC = () => {
           setSearchResults(results);
         }}
       />
-      <Hits hitComponent={HitsComponent} hits={searchResults} />
+      <Hits<ContentfulDataItem> hitComponent={HitsComponent} />
     </InstantSearch>
   );
 };
