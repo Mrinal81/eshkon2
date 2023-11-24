@@ -2,31 +2,35 @@ import Avatar from '../ui/Avatar';
 import ContentfulImage from '../ui/ContentfulImage';
 import DateComponent from '../ui/DateComponent';
 
-interface Post {
-  fields: {
-    title: string;
-    coverImage: {
-      fields: {
-        file: {
-          url: string;
+// Use namespace to avoid naming conflict
+namespace PostHeaderNS {
+  export interface Post {
+    fields: {
+      title: string;
+      coverImage: {
+        fields: {
+          file: {
+            url: string;
+          };
         };
       };
-    };
-    author: {
-      fields: {
-        name: string;
-        picture: string; 
+      author: {
+        fields: {
+          name: string;
+          picture: string;
+        };
       };
+      date: string;
+      excerpt?: string;
     };
-    date: string;
-  };
+  }
+
+  export interface PostHeaderProps {
+    post: Post;
+  }
 }
 
-interface PostHeaderProps {
-  post: Post;
-}
-
-const PostHeader: React.FC<PostHeaderProps> = ({ post }) => {
+const PostHeader: React.FC<PostHeaderNS.PostHeaderProps> = ({ post }) => {
   const { title, coverImage, author, date } = post.fields;
 
   return (

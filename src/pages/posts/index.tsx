@@ -3,52 +3,54 @@ import AlgoliaSearch from '../../components/AlgoliaSearch';
 import { client } from '../../lib/contentful/client';
 import PostCard from '../../components/posts/PostCard';
 
-interface Post {
-  fields: {
-    title: string;
-    slug: string;
-    excerpt: string;
-    coverImage: {
-      fields: {
-        file: {
-          url: string;
+namespace PostsNS {
+  export interface Post {
+    fields: {
+      title: string;
+      coverImage: {
+        fields: {
+          file: {
+            url: string;
+          };
         };
       };
-    };
-    author: {
-      fields: {
-        name: string;
-        picture: {
-          fields: {
-            file: {
-              url: string;
+      author: {
+        fields: {
+          name: string;
+          picture: {
+            fields: {
+              file: {
+                url: string;
+              };
             };
           };
         };
       };
+      date: string;
+      slug: string;
+      excerpt: string
+      
+    ;
     };
-    date: string;
-  };
+  }
+
+  export interface PostsProps {
+    posts: Post[];
+  }
 }
 
-
-
-interface PostsProps {
-  posts: Post[];
-}
-
-const Posts: React.FC<PostsProps> = ({ posts }) => {
+const Posts: React.FC<PostsNS.PostsProps> = ({ posts }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<Post[]>(posts);
+  const [searchResults, setSearchResults] = useState<PostsNS.Post[]>(posts);
 
-  const handleSearchResults = (results: Post[]) => {
+  const handleSearchResults = (results: PostsNS.Post[]) => {
     setSearchResults(results);
   };
 
   return (
     <section className='section'>
       <div className='container'>
-      <AlgoliaSearch data-onSearchResults={handleSearchResults} />
+        <AlgoliaSearch data-onSearchResults={handleSearchResults} />
         <ul className='unorderedlist'>
           {searchResults.map((post) => (
             <PostCard key={post.fields.slug} post={post} />
@@ -64,7 +66,7 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      posts: response.items as Post[],
+      posts: response.items as PostsNS.Post[],
       revalidate: 60,
     },
   };
