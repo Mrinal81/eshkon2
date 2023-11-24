@@ -1,13 +1,14 @@
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
-
-const options={}
-
-const RichText=({content})=>{
-    return(
-    <>
-    {documentToReactComponents(content,options)}
-    </>
-    )
+interface RichTextProps {
+  content: any;
+  className?: string;
 }
-export default RichText
+
+const options = {};
+
+const RichText: React.FC<RichTextProps> = ({ content, className }) => {
+  return <div className={className}>{documentToReactComponents(content, options)}</div>;
+};
+
+export default RichText;

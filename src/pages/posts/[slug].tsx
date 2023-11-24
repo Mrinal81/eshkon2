@@ -1,66 +1,46 @@
-import PostHeader from '../../components/posts/PostHeader'
-import PostBody from '../../components/posts/PostBody'
-import Skeleton from '../../components/ui/Skeleton'
-import { client } from '../../lib/contentful/client'
-import { useRouter } from 'next/router'
+const contentful = require('contentful');
 
-const Post = ({ post }) => {
-  const router = useRouter()
-
-  return (
-    <section className='section'>
-      <div className='container'>
-        <article className='prose'>
-          {router.isFallback ? (
-            <Skeleton />
-          ) : (
-            <>
-              <PostHeader post={post} />
-              <PostBody post={post} className='custom-class' />
-            </>
-          )}
-        </article>
-      </div>
-    </section>
-  )
+interface ContentfulItem {
+  sys: {
+    id: string;
+  };
+  fields: {
+    title: string;
+    content: string;
+    date: string;
+    coverImage: {
+      fields: {
+        file: {
+          url: string;
+        };
+      };
+    };
+    author: string; 
+    excerpt: string;
+    slug: string;
+  };
 }
 
-export const getStaticProps = async ({ params }) => {
-  const cfClient = client
+export const client = contentful.createClient({
+  space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+  accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+});
 
-  const { slug } = params
-  const response = await cfClient.getEntries({
-    content_type: 'post',
-    'fields.slug': slug
-  })
-
-  if (!response?.items?.length) {
-    return {
-      redirect: {
-        destination: '/posts',
-        permanent: false
-      }
-    }
+export const fetchContentfulData = async () => {
+  try {
+    const response = await client.getEntries({ content_type: 'post' });
+    return response.items.map((item: ContentfulItem) => ({
+      objectID: item.sys.id,
+      title: item.fields.title,
+      content: item.fields.content,
+      date: item.fields.date,
+      image: item.fields.coverImage.fields.file.url,
+      author: item.fields.author,
+      excerpt: item.fields.excerpt,
+      slug: item.fields.slug,
+    }));
+  } catch (error) {
+    console.error('Error fetching Contentful data', error);
+    return [];
   }
-
-  return {
-    props: {
-      post: response?.items?.[0],
-      revalidate: 60
-    }
-  }
-}
-
-export const getStaticPaths = async () => {
-  const response = await client.getEntries({ content_type: 'post' })
-  const paths = response.items.map(item => ({
-    params: { slug: item.fields.slug }
-  }))
-
-  return {
-    paths,
-    fallback: true
-  }
-}
-
-export default Post
+};

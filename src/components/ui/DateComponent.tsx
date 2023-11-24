@@ -7,7 +7,7 @@ interface DateComponentProps {
   className?: string;
 }
 
-const DateComponent: React.FC<DateComponentProps> = ({ dateString, options, className, ...rest }) => {
+const DateComponent: React.FC<DateComponentProps> = ({ dateString, options = {}, className, ...rest }) => {
   return (
     <time dateTime={dateString} className={className} {...rest}>
       {formatDate(dateString, options)}
