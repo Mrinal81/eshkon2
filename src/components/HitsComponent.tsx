@@ -12,13 +12,8 @@ interface ContentfulDataItem {
 
 const HitsComponent: React.FC<{ hit: Hit<ContentfulDataItem> }> = ({ hit }) => {
   return (
-    <div>
-      <h2>
-        <Link href={`/posts/${hit.slug}`}>
-          <a>{hit.title}</a>
-        </Link>
-      </h2>
-      <p>{hit.excerpt}</p>
+    <div className='algo'>
+          <h3>{hit.title}</h3>
     </div>
   );
 };
