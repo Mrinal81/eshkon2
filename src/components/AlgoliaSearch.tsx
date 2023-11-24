@@ -12,7 +12,6 @@ interface ContentfulDataItem {
   excerpt: string;
 }
 
-
 let counter = 0;
 
 function generateUniqueID() {
@@ -52,7 +51,8 @@ const AlgoliaSearch: React.FC = () => {
         return item;
       });
 
-      index.saveObjects(objectsToSave)
+      index
+        .saveObjects(objectsToSave)
         .then((response) => {
           console.log('Objects saved:', response);
         })
@@ -62,7 +62,7 @@ const AlgoliaSearch: React.FC = () => {
     }
   }, [contentfulData]);
 
-    return (
+  return (
     <InstantSearch
       searchClient={algoliasearch(
         process.env.NEXT_PUBLIC_ALGOLIA_APP_ID || '',
@@ -71,12 +71,17 @@ const AlgoliaSearch: React.FC = () => {
       indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || ''}
       searchState={searchState}
       onSearchStateChange={(searchState) => setSearchState(searchState)}
-      onSearchSubmit={({ query }) => {
-        const results = contentfulData.filter(post => post.title.toLowerCase().includes(query.toLowerCase()));
-        setSearchResults(results);
-      }}
     >
-      <SearchBox />
+      <SearchBox
+        onSubmit={(event) => {
+          // Handle the search submit logic here
+          const query = event.currentTarget.value;
+          const results = contentfulData.filter((post) =>
+            post.title.toLowerCase().includes(query.toLowerCase())
+          );
+          setSearchResults(results);
+        }}
+      />
       <Hits hitComponent={HitsComponent} hits={searchResults} />
     </InstantSearch>
   );
