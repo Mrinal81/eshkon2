@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import React from 'react';
+import { Hit } from 'react-instantsearch-core';
+import Link from 'next/link';
 
 interface ContentfulDataItem {
   objectID: string;
@@ -9,7 +10,7 @@ interface ContentfulDataItem {
   excerpt: string;
 }
 
-const HitsComponent: React.FC<{ hit: ContentfulDataItem }> = ({ hit }) => {
+const HitsComponent: React.FC<{ hit: Hit<ContentfulDataItem> }> = ({ hit }) => {
   return (
     <div>
       <h2>
