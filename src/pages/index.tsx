@@ -1,5 +1,3 @@
-// import Search from '../components/Search';
-
 interface HomepageProps {
   onSearch: (query: string) => void;
 }

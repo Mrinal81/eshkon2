@@ -2,7 +2,6 @@ import Avatar from '../ui/Avatar';
 import ContentfulImage from '../ui/ContentfulImage';
 import DateComponent from '../ui/DateComponent';
 
-// Use namespace to avoid naming conflict
 namespace PostHeaderNS {
   export interface Post {
     fields: {
@@ -17,7 +16,13 @@ namespace PostHeaderNS {
       author: {
         fields: {
           name: string;
-          picture: string;
+          picture: {
+            fields: {
+              file: {
+                url: string;
+              };
+            };
+          };
         };
       };
       date: string;

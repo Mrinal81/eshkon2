@@ -1,46 +1,80 @@
-const contentful = require('contentful');
+// [slug].tsx
+import React from 'react';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import PostBody from '../../components/posts/PostBody';
+import PostHeader from '../../components/posts/PostHeader';
+import { client, fetchContentfulData } from '../../lib/contentful/client';
 
-interface ContentfulItem {
-  sys: {
-    id: string;
-  };
-  fields: {
-    title: string;
-    content: string;
-    date: string;
-    coverImage: {
-      fields: {
-        file: {
-          url: string;
+interface PostProps {
+  post: {
+    fields: {
+      title: string;
+      coverImage: {
+        fields: {
+          file: {
+            url: string;
+          };
         };
       };
+      author: {
+        fields: {
+          name: string;
+          picture: {
+            fields: {
+              file: {
+                url: string;
+              };
+            };
+          };
+        };
+      };
+      date: string;
+      content: string;
     };
-    author: string; 
-    excerpt: string;
-    slug: string;
   };
 }
 
-export const client = contentful.createClient({
-  space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-  accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
-});
 
-export const fetchContentfulData = async () => {
-  try {
-    const response = await client.getEntries({ content_type: 'post' });
-    return response.items.map((item: ContentfulItem) => ({
-      objectID: item.sys.id,
-      title: item.fields.title,
-      content: item.fields.content,
-      date: item.fields.date,
-      image: item.fields.coverImage.fields.file.url,
-      author: item.fields.author,
-      excerpt: item.fields.excerpt,
-      slug: item.fields.slug,
-    }));
-  } catch (error) {
-    console.error('Error fetching Contentful data', error);
-    return [];
-  }
+const Post: React.FC<PostProps> = ({ post }) => {
+  return (
+    <div>
+      <PostHeader post={post} />
+      <PostBody post={post} />
+    </div>
+  );
 };
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const response = await client.getEntries({ content_type: 'post' });
+
+  const paths = response.items.map((item: any) => ({
+    params: { slug: item.fields.slug },
+  }));
+
+  return { paths, fallback: false };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const response = await client.getEntries({
+    content_type: 'post',
+    'fields.slug': params?.slug,
+  });
+
+  const post = response.items[0];
+
+  return {
+    props: {
+      post: {
+        fields: {
+          title: post.fields.title,
+          coverImage: post.fields.coverImage,
+          author: post.fields.author,
+          date: post.fields.date,
+          content: post.fields.content,
+        },
+      },
+    },
+  };
+};
+
+export default Post;

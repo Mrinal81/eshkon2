@@ -1,4 +1,3 @@
-// Avatar.tsx
 import React from 'react';
 import ContentfulImage from './ContentfulImage';
 
